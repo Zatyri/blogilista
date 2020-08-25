@@ -14,6 +14,6 @@ test('blogs are returned as json', () => {
 
 
 afterAll(() => {
-    mongoose.connection.close()
+    mongoose.connection.close()    
   })
 
