@@ -1,5 +1,4 @@
 const listHelper = require('../utils/list_helper')
-const { favoriteBlog } = require('../utils/list_helper')
 
 describe('favoriteBlog', () => {
     test('no blogs, return 0', () => {
