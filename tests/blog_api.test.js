@@ -46,6 +46,25 @@ test('blogs are added to db', async ()=> {
   expect(blogs.body[2].id).toBe('5a422b3a1b54a676234d17f9')
 })
 
+test('if added blogs likes = null, 0 is set by default', async () => {
+  const newBlog = {
+    title: 'Blog with no likes',
+    author: 'Me',
+    url: 'http://test.io'    
+  }
+    
+  await api.post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+  const blogs = await api.get('/api/blogs')
+  console.log(blogs.body);
+  
+  expect(blogs.body[blogs.body.length - 1].likes).toBe(0)
+})
+
+
 afterAll(() => {
   mongoose.connection.close()
 })
