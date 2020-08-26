@@ -38,7 +38,7 @@ test('blogs are added to db', async ()=> {
   const newBlog = initialBlogs[2]
   await api.post('/api/blogs')
       .send(newBlog)
-      .expect(201)
+      .expect(200)
       .expect('Content-Type', /application\/json/)
 
   const blogs = await api.get('/api/blogs')
@@ -55,13 +55,23 @@ test('if added blogs likes = null, 0 is set by default', async () => {
     
   await api.post('/api/blogs')
       .send(newBlog)
-      .expect(201)
+      .expect(200)
       .expect('Content-Type', /application\/json/)
 
   const blogs = await api.get('/api/blogs')
-  console.log(blogs.body);
-  
   expect(blogs.body[blogs.body.length - 1].likes).toBe(0)
+})
+
+test('blog post without title and url responds 400 Bad request', async () => {
+  const newBlog = {
+    author: 'Me'
+  }
+
+  await api.post('/api/blogs')
+  .send(newBlog)
+  .expect(400)
+  
+  
 })
 
 
