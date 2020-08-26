@@ -2,12 +2,11 @@ const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
 const logger = require('../utils/logger')
 const blog = require('../models/blog')
-const { request } = require('../app')
-const { response } = require('express')
+const User = require('../models/user')
 
 blogsRouter.get('/',  async (request, response) => {
   try {
-    const blogs = await Blog.find({})
+    const blogs = await Blog.find({}).populate('user', {username: 1, name: 1})
     response.json(blogs.map(blog => blog.toJSON()))
   } catch (error ) {
     logger.error(error)
@@ -29,15 +28,24 @@ blogsRouter.get('/:id',  async (request, response) => {
   
 blogsRouter.post('/', async (request, response) => {
   try {
-        
-    const blog = new Blog(request.body)
+    const body = request.body    
+    
+    const user = await User.findById(body.userId)    
+    
+    const blog = new Blog({
+      title: body.title,
+      author: body.author,
+      url: body.url,
+      likes: body.likes,
+      user: user._id
+    })
+
     const saveBlog = await blog.save()    
-    response.json(saveBlog.toJSON())    
-    if(saveBlog){
-      await response.status(201).json(saveBlog.toJSON())
-    } else {
-      await response.status(400).end()
-    }
+    user.blogs = user.blogs.concat(saveBlog._id)
+    await user.save()
+
+    response.json(saveBlog.toJSON())
+    
   } catch (error) {    
     logger.error(error)
     if(process.env.NODE_ENV === 'test'){      

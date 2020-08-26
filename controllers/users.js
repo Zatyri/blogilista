@@ -5,7 +5,7 @@ const logger = require('../utils/logger')
 
 usersRouter.get('/', async (request, response) => {
     try {
-        const users = await User.find({})
+        const users = await User.find({}).populate('blogs', {title: 1, author: 1, url: 1, likes: 1})
         response.json(users.map(x => x.toJSON()))
     } catch (error) {
         logger.error(error)
@@ -15,6 +15,7 @@ usersRouter.get('/', async (request, response) => {
 
 usersRouter.post('/', async (request, response) => {
   const body = request.body
+
    try {
     const saltRounds = 10
     const passwordHash = await bcrypt.hash(body.password, saltRounds)
