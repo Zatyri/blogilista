@@ -16,62 +16,73 @@ beforeEach(async () => {
   blogObject = new Blog(initialBlogs[1])
   await blogObject.save()
 })
-
-test('blogs are returned as json ', async ()=>{  
-  await api
-    .get('/api/blogs')    
-    .expect('Content-Type', /application\/json/)
-    .expect(200)
-})
-
-test('return 2 blogs', async () => {
-  const blogs = await api.get('/api/blogs')
-  expect(blogs.body.length).toBe(2)
-})
-
-test('returned blog id is id', async () => {
-  const response = await api.get('/api/blogs')
-  expect(response.body[0].id).toBeDefined()
-})
-
-test('blogs are added to db', async ()=> {
-  const newBlog = initialBlogs[2]
-  await api.post('/api/blogs')
-      .send(newBlog)
-      .expect(200)
+describe('GET /api/blogs', () => {
+  test('blogs are returned as json ', async ()=>{  
+    await api
+      .get('/api/blogs')    
       .expect('Content-Type', /application\/json/)
+      .expect(200)
+  })
 
-  const blogs = await api.get('/api/blogs')
-  expect(blogs.body.length).toBe(3)
-  expect(blogs.body[2].id).toBe('5a422b3a1b54a676234d17f9')
+  test('return 2 blogs', async () => {
+    const blogs = await api.get('/api/blogs')
+    expect(blogs.body.length).toBe(2)
+  })
+
+  test('returned blog id is id', async () => {
+    const response = await api.get('/api/blogs')
+    expect(response.body[0].id).toBeDefined()
+  })
 })
 
-test('if added blogs likes = null, 0 is set by default', async () => {
-  const newBlog = {
-    title: 'Blog with no likes',
-    author: 'Me',
-    url: 'http://test.io'    
-  }
+describe('POST /api/blogs/', () => {
+  test('blogs are added to db', async ()=> {
+    const newBlog = initialBlogs[2]
+    await api.post('/api/blogs')
+        .send(newBlog)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+
+    const blogs = await api.get('/api/blogs')
+    expect(blogs.body.length).toBe(3)
+    expect(blogs.body[2].id).toBe('5a422b3a1b54a676234d17f9')
+  })
+
+  test('if added blogs likes = null, 0 is set by default', async () => {
+    const newBlog = {
+      title: 'Blog with no likes',
+      author: 'Me',
+      url: 'http://test.io'    
+    }
+      
+    await api.post('/api/blogs')
+        .send(newBlog)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+
+    const blogs = await api.get('/api/blogs')
+    expect(blogs.body[blogs.body.length - 1].likes).toBe(0)
+  })
+
+  test('blog post without title and url responds 400 Bad request', async () => {
+    const newBlog = {
+      author: 'Me'
+    }
+    await api.post('/api/blogs')
+    .send(newBlog)
+    .expect(400)
+  })
+})
+
+describe('DELETE /api/blogs', () => {
+  test('delete blog by id and confirm it is deleted', async () => {
+    const result = await api.delete(`/api/blogs/${initialBlogs[0]._id}`)
+    expect(result.status).toBe(204)
+
+    const blogs = await api.get('/api/blogs')    
+    expect(blogs.body[0].id).not.toBe("5a422a851b54a676234d17f7")
     
-  await api.post('/api/blogs')
-      .send(newBlog)
-      .expect(200)
-      .expect('Content-Type', /application\/json/)
-
-  const blogs = await api.get('/api/blogs')
-  expect(blogs.body[blogs.body.length - 1].likes).toBe(0)
-})
-
-test('blog post without title and url responds 400 Bad request', async () => {
-  const newBlog = {
-    author: 'Me'
-  }
-
-  await api.post('/api/blogs')
-  .send(newBlog)
-  .expect(400)
-  
-  
+  })
 })
 
 
