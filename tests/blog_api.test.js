@@ -85,6 +85,17 @@ describe('DELETE /api/blogs', () => {
   })
 })
 
+describe('/PUT /api/blogs', () => {
+  test('blog updates and returns updated value', async () => {
+    const newBlog = initialBlogs[0]
+    newBlog.likes = 50
+    let result = await api.put(`/api/blogs/${initialBlogs[0]._id}`).send(newBlog)
+    expect(result.status).toBe(200)
+    result = await api.get('/api/blogs')
+    expect(result.body[0].likes).toBe(50)
+  })
+})
+
 
 afterAll(() => {
   mongoose.connection.close()
