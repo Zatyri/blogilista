@@ -24,9 +24,26 @@ test('blogs are returned as json ', async ()=>{
     .expect(200)
 })
 
+test('return 2 blogs', async () => {
+  const blogs = await api.get('/api/blogs')
+  expect(blogs.body.length).toBe(2)
+})
+
 test('returned blog id is id', async () => {
   const response = await api.get('/api/blogs')
   expect(response.body[0].id).toBeDefined()
+})
+
+test('blogs are added to db', async ()=> {
+  const newBlog = initialBlogs[2]
+  await api.post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+  const blogs = await api.get('/api/blogs')
+  expect(blogs.body.length).toBe(3)
+  expect(blogs.body[2].id).toBe('5a422b3a1b54a676234d17f9')
 })
 
 afterAll(() => {
