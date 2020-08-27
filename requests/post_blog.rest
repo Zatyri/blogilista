@@ -1,7 +1,7 @@
 POST http://localhost:3001/api/blogs
 Content-Type: application/json
-Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJvb3QiLCJpZCI6IjVmNDc0ODJiMzhmZmRhNTRhOGViZjBmNyIsImlhdCI6MTU5ODUwODQ4NX0.8tAufavBOiQq8cNtqyxb8_gfdJPa_hMpyqIFxJsObY8
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJvb3QiLCJpZCI6IjVmNDc0ODJiMzhmZmRhNTRhOGViZjBmNyIsImlhdCI6MTU5ODUxMTIwM30.-r0hLUQ5cv37qBICNMu4dul0AmWzljxSciHzj8NZZyE
 
 {
-"title": "token test", "author": "Tommy token", "url": "test 123453", "likes": 3, "userId": "5f4698a826462077d84d1c0b"
+"title": "token test3", "author": "token tokensson", "url": "test 9654894", "likes": 5, "userId": "5f4698a826462077d84d1c0b"
 }
