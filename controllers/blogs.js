@@ -4,6 +4,7 @@ const logger = require('../utils/logger')
 const blog = require('../models/blog')
 const User = require('../models/user')
 const jwt = require('jsonwebtoken')
+const { findByIdAndRemove, findByIdAndDelete } = require('../models/user')
 
 blogsRouter.get('/',  async (request, response) => {
   try {
@@ -63,8 +64,23 @@ blogsRouter.post('/', async (request, response) => {
 
 blogsRouter.delete('/:id', async (request, response) => {
   try {
-    const result = await blog.findByIdAndRemove(request.params.id)
-    await response.status(result ? 204 : 404).end()
+    const decodedToken = jwt.verify(request.token, process.env.SECRET) 
+    if(!request.token || !decodedToken.id){
+      return response.status(401).json({error: 'token missing or invalid'})
+    }
+
+    const blogToDelete = await Blog.findById(request.params.id)
+    if(!blogToDelete){
+      return response.status(404).json({error: 'Blog not found'})
+    }
+    
+    if(blogToDelete.user.toString() === decodedToken.id.toString()){
+      await Blog.findByIdAndDelete(request.params.id)
+      response.status(200).end()
+    } else {
+      response.status(403).json({error: 'Access denied'})
+    }
+    
   } catch (error) {
     logger.error(error)
   }
