@@ -4,11 +4,10 @@ const logger = require('../utils/logger')
 const blog = require('../models/blog')
 const User = require('../models/user')
 const jwt = require('jsonwebtoken')
-const { findByIdAndRemove, findByIdAndDelete } = require('../models/user')
 
 blogsRouter.get('/',  async (request, response) => {
   try {
-    const blogs = await Blog.find({}).populate('user', {username: 1, name: 1})
+    const blogs = await Blog.find({}).populate('user', {username: 1, name: 1}).populate('comments',{comment: 1})
     response.json(blogs.map(blog => blog.toJSON()))
   } catch (error ) {
     logger.error(error)
@@ -28,7 +27,8 @@ blogsRouter.get('/:id',  async (request, response) => {
   }
 })
   
-blogsRouter.post('/', async (request, response) => {
+blogsRouter.post('/', async (request, response) => {  
+  
   try {
     const body = request.body
 
@@ -45,7 +45,8 @@ blogsRouter.post('/', async (request, response) => {
       author: body.author,
       url: body.url,
       likes: body.likes,
-      user: user._id
+      user: user._id,
+      comments: []
     })
 
     const saveBlog = await blog.save()    
@@ -59,6 +60,7 @@ blogsRouter.post('/', async (request, response) => {
     if(process.env.NODE_ENV === 'test'){      
       response.status(400).end()
     }
+    response.status(400).end()
   }
 })
 
